@@ -17,8 +17,6 @@ from copy import deepcopy
 from datetime import date
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from tradingagents.default_config import DEFAULT_CONFIG
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 
@@ -61,7 +59,6 @@ def asset_type(ticker: str) -> str:
 
 
 def main() -> int:
-    load_dotenv()
     args = parse_args()
 
     config = deepcopy(DEFAULT_CONFIG)
