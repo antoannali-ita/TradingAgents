@@ -28,15 +28,21 @@ cp .env.example .env
 Nel file `.env` inserire esclusivamente la chiave del provider scelto. Non
 caricare mai `.env` su GitHub: è già escluso tramite `.gitignore`.
 
-Esempio OpenAI:
+Configurazione Gemini consigliata per la prima prova:
 
 ```dotenv
-OPENAI_API_KEY=...
-TRADINGAGENTS_LLM_PROVIDER=openai
-TRADINGAGENTS_DEEP_THINK_LLM=gpt-5.5
-TRADINGAGENTS_QUICK_THINK_LLM=gpt-5.4-mini
+GOOGLE_API_KEY=incolla_qui_la_chiave_solo_in_locale
+TRADINGAGENTS_LLM_PROVIDER=google
+TRADINGAGENTS_DEEP_THINK_LLM=gemini-3.5-flash
+TRADINGAGENTS_QUICK_THINK_LLM=gemini-3.1-flash-lite
 TRADINGAGENTS_OUTPUT_LANGUAGE=Italian
+TRADINGAGENTS_MAX_DEBATE_ROUNDS=1
+TRADINGAGENTS_MAX_RISK_ROUNDS=1
+TRADINGAGENTS_CHECKPOINT_ENABLED=true
 ```
+
+Il livello gratuito ha quote per progetto. Per evitare di saturarle, iniziare
+con un solo ticker e senza aumentare i round di dibattito o rischio.
 
 ## 2. Prima prova: un titolo
 
