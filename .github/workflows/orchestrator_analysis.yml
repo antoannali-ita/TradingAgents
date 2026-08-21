@@ -1,0 +1,62 @@
+name: TradingAgents Orchestrator Analysis
+
+on:
+  workflow_dispatch:
+    inputs:
+      ticker:
+        description: Ticker to analyze
+        required: true
+        type: string
+      market:
+        description: Market
+        required: true
+        default: usa
+        type: choice
+        options: [usa, italy]
+      analysis_id:
+        description: Supabase ai_analysis UUID
+        required: true
+        type: string
+      source_signal_id:
+        description: Source signal id
+        required: false
+        default: ''
+        type: string
+
+concurrency:
+  group: tradingagents-${{ inputs.ticker }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install TradingAgents
+        run: pip install -e .
+      - name: Analyze qualified signal
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          TRADINGAGENTS_LLM_PROVIDER: ${{ vars.TRADINGAGENTS_LLM_PROVIDER || 'google' }}
+          TRADINGAGENTS_DEEP_THINK_LLM: ${{ vars.TRADINGAGENTS_DEEP_THINK_LLM || 'gemini-3.5-flash' }}
+          TRADINGAGENTS_QUICK_THINK_LLM: ${{ vars.TRADINGAGENTS_QUICK_THINK_LLM || 'gemini-3.1-flash-lite' }}
+          TRADINGAGENTS_OUTPUT_LANGUAGE: ${{ vars.TRADINGAGENTS_OUTPUT_LANGUAGE || 'Italian' }}
+          TRADINGAGENTS_MAX_DEBATE_ROUNDS: ${{ vars.TRADINGAGENTS_MAX_DEBATE_ROUNDS || '1' }}
+          TRADINGAGENTS_MAX_RISK_ROUNDS: ${{ vars.TRADINGAGENTS_MAX_RISK_ROUNDS || '1' }}
+        run: >-
+          python scripts/orchestrator_analysis.py
+          --ticker "${{ inputs.ticker }}"
+          --market "${{ inputs.market }}"
+          --analysis-id "${{ inputs.analysis_id }}"
+          --source-signal-id "${{ inputs.source_signal_id }}"
